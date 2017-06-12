@@ -62,14 +62,6 @@ pygame.init()
 gameDisplay = pygame.display.set_mode((display_width,display_height))
 pygame.display.set_caption("BOX")
 
-def input_from_user(gamerunning):
-	for event in pygame.event.get():
-		if event.type == pygame.QUIT:
-			pygame.quit()
-			quit()
-		if event.type == pygame.KEYDOWN:
-			if event.key == pygame.K_s:
-				gamerunning = False
 
 def drawBox(gameDisplay):
 	gameDisplay.fill(black)
@@ -107,16 +99,24 @@ def gameloop():
 	while True:
 		try:
 			a = int(raw_input("select a combination among the 92:"))
-			drawBox(gameDisplay)
-			input_from_user(gamerunning)
-			print boards[a-1]
-			for k in boards[a-1]:
-				s = (k[0]*50+35,k[1]*50+35)
-				add_pawn(gameDisplay,s)
-				print s
-			pygame.display.update()
 		except:
 			print "ERROR: Invalid input!!!!!!!!!. Enter a valid number(1-92)"
+			print "(OR) enter 0 to exit"
+
+		if (a<0 or a>92):
+			continue
+		if a==0:
+			pygame.quit()
+			quit()
+			break
+		drawBox(gameDisplay)
+		print boards[a-1]
+		for k in boards[a-1]:
+			s = (k[0]*50+35,k[1]*50+35)
+			add_pawn(gameDisplay,s)
+			print s
+		pygame.display.update()
+		
 		
 
 
