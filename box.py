@@ -1,7 +1,53 @@
 import numpy 
 import pygame 
+import itertools
 
 
+#%%%%%%%%%%%%%%%%% FUNCTIONS REGARDING CHESS %%%%%%%%%%%%%%%%%%%#
+def display_board(board):
+	print board
+
+
+def init():
+	board = numpy.zeros((8,8))
+	return board
+
+def update_board(board,points):
+	for a in points:
+		board[a[0],a[1]]=1
+
+def check(points):
+	for a in points:
+		for b in points:
+			if a != b:
+				if a[0] == b[0]:
+					return False
+				if a[1] == b[1]:
+					return False
+				if a[0]-b[0] == a[1]-b[1]:
+					return False
+				if a[0]-b[0] == b[1]-a[1]:
+					return False
+	return True			
+def solve():
+	taskRunning = True
+	indexes = [0,1,2,3,4,5,6,7]
+	pos_arr = [7,6,5,4,3,2,1,0]
+	a = itertools.permutations(pos_arr)
+	boards = []	
+	comb = 0
+	for j in a:
+		board = init()
+		points = zip(indexes,j)	
+		if not check(points):
+			continue
+		update_board(board,points)
+		display_board(board)
+		boards.append(points)
+		comb= comb+1
+		#print "this a valid combination, no."+str(comb)
+	return boards
+#%%%%%%%%%%%%%%%%%%%% END OF CHESS FUNCTIONS %%%%%%%%%%%%%%%%%%%%#
 display_width = 420
 display_height = 420
 	
@@ -16,13 +62,17 @@ pygame.init()
 gameDisplay = pygame.display.set_mode((display_width,display_height))
 pygame.display.set_caption("BOX")
 
-def input_from_user():
+def input_from_user(gamerunning):
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			pygame.quit()
 			quit()
+		if event.type == pygame.KEYDOWN:
+			if event.key == pygame.K_s:
+				gamerunning = False
 
 def drawBox(gameDisplay):
+	gameDisplay.fill(black)
 	################## BASIC BOX	####################
 	pygame.draw.line(gameDisplay,blue,(10,10),(10,410))
 	pygame.draw.line(gameDisplay,blue,(10,410),(410,410))
@@ -46,17 +96,28 @@ def drawBox(gameDisplay):
 	pygame.draw.line(gameDisplay,blue,(410,360),(10,360))
 	################# VERTICAL	######################
 
-def hero(xy,gameDisplay):
-	pygame.draw.rect(gameDisplay,blue,xy,20,20)	
+def add_pawn(gameDisplay,center):
+	pygame.draw.circle(gameDisplay,red,center,20)
+	
 
 def gameloop():
 	gamerunning = True
 	pixAr = pygame.PixelArray(gameDisplay)
-	xy = (200,200)
-	while gamerunning:
-		drawBox(gameDisplay)
-		input_from_user()
-		pygame.display.update()
+	boards = solve()
+	while True:
+		try:
+			a = int(raw_input("select a combination among the 92:"))
+			drawBox(gameDisplay)
+			input_from_user(gamerunning)
+			print boards[a-1]
+			for k in boards[a-1]:
+				s = (k[0]*50+35,k[1]*50+35)
+				add_pawn(gameDisplay,s)
+				print s
+			pygame.display.update()
+		except:
+			print "ERROR: Invalid input!!!!!!!!!. Enter a valid number(1-92)"
+		
 
 
 if __name__ == "__main__":
